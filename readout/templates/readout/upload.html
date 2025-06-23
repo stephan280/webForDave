@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload or Paste Text</title>
+</head>
+<body>
+  <h2>Convert Your Content to Audio</h2>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Continue</button>
+  </form>
+  <p><a href="{% url 'dashboard' %}">← Back to Dashboard</a></p>
+</body>
+</html>

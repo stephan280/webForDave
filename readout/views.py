@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+import PyPDF2
+from .forms import TextOrPDFForm
 
 def home(request):
     if request.user.is_authenticated:
@@ -20,3 +22,33 @@ def register(request):
 @login_required
 def dashboard(request):
     return render(request, 'readout/dashboard.html')
+
+def extract_text_from_pdf(pdf_file):
+    reader = PyPDF2.PdfReader(pdf_file)
+    full_text = ""
+    for page in reader.pages:
+        full_text += page.extract_text()
+    return full_text
+
+@login_required
+def upload(request):
+    if request.method == 'POST':
+        form = TextOrPDFForm(request.POST, request.FILES)
+        if form.is_valid():
+            text = form.cleaned_data.get('text_input')
+            pdf = form.cleaned_data.get('pdf_file')
+
+            if pdf:
+                text = extract_text_from_pdf(pdf)
+
+            # Store the extracted text in session (temp) for next step
+            request.session['tts_text'] = text
+            return redirect('preview')
+    else:
+        form = TextOrPDFForm()
+    return render(request, 'readout/upload.html', {'form': form})
+
+@login_required
+def preview(request):
+    text = request.session.get('tts_text', '')
+    return render(request, 'readout/preview.html', {'text': text})
