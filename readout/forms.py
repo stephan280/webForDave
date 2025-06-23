@@ -10,6 +10,10 @@ class TextOrPDFForm(forms.Form):
         label='Upload PDF',
         required=False
     )
+    language = forms.ChoiceField(
+        choices=[('en', 'English'), ('pidgin', 'Pidgin')],
+        label='Choose Language'
+    )
 
     def clean(self):
         cleaned_data = super().clean()
