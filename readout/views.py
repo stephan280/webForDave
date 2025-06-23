@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     return render(request, 'readout/home.html')
 
 def register(request):
@@ -13,3 +16,7 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, "readout/register.html", {'form': form})
+
+@login_required
+def dashboard(request):
+    return render(request, 'readout/dashboard.html')
