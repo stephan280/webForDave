@@ -3,6 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 import PyPDF2
 from .forms import TextOrPDFForm
+from gtts import gTTS
+import os
+from django.conf import settings
+import uuid  # for unique filename
 
 def home(request):
     if request.user.is_authenticated:
@@ -52,3 +56,21 @@ def upload(request):
 def preview(request):
     text = request.session.get('tts_text', '')
     return render(request, 'readout/preview.html', {'text': text})
+
+def convert_text_to_audio(request):
+    text = request.session.get('tts_text', '')
+    if not text:
+        return redirect('upload') # this is return user if there is not text
+
+    # Generate unique filename
+    filename = f"{uuid.uuid4()}.mp3"
+    file_path = os.path.join(settings.MEDIA_ROOT, filename)
+
+    # Convert text to speech
+    tts = gTTS(text)
+    tts.save(file_path)
+
+    # Pass path to template
+    return render(request, 'readout/audio_result.html', {
+        'audio_file': settings.MEDIA_URL + filename
+    })

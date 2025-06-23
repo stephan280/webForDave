@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Audio</title>
+</head>
+<body>
+  <h2>Here’s your audio file 🎧</h2>
+
+  <audio controls>
+    <source src="{{ audio_file }}" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <p>
+    <a href="{{ audio_file }}" download>Download Audio</a>
+  </p>
+
+  <p><a href="{% url 'upload' %}">Convert Another</a></p>
+</body>
+</html>

@@ -7,4 +7,5 @@ urlpatterns = [
     path("dashboard/", views.dashboard, name='dashboard'),
     path('upload/', views.upload, name='upload'),
     path('preview', views.preview, name='preview'),
+    path('convert', views.convert_text_to_audio, name='convert'),
 ]

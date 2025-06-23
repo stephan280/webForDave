@@ -8,5 +8,11 @@
   <p>{{ text|linebreaks }}</p>
 
   <p><a href="{% url 'upload' %}">← Back</a></p>
+
+  <form action="{% url 'convert' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Convert to Audio</button>
+   </form>
+
 </body>
 </html>
