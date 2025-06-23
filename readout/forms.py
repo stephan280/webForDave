@@ -4,13 +4,14 @@ class TextOrPDFForm(forms.Form):
     text_input = forms.CharField(
         label='Paste Text',
         widget=forms.Textarea(attrs={
-            'rows': 4,
             'class': 'form-control',
+            'rows': 4,
             'placeholder': 'Paste your content here...',
-            'style': 'resize: vertical; max-height: 200px;'
+            'style': 'resize: vertical; max-height: 200px;',
         }),
         required=False
     )
+
     pdf_file = forms.FileField(
         label='Upload PDF',
         required=False,
@@ -19,6 +20,7 @@ class TextOrPDFForm(forms.Form):
             'accept': '.pdf'
         })
     )
+
     language = forms.ChoiceField(
         choices=[('en', 'English'), ('pidgin', 'Pidgin')],
         label='Choose Language',

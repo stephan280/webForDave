@@ -6,7 +6,9 @@ from .forms import TextOrPDFForm
 from gtts import gTTS
 import os
 from django.conf import settings
-import uuid  # for unique filename
+import uuid
+from datetime import datetime
+import random
 
 def home(request):
     if request.user.is_authenticated:
@@ -25,7 +27,18 @@ def register(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'readout/dashboard.html')
+    # Greeting based on time of day
+    hour = datetime.now().hour
+    if hour < 12:
+        greeting = "Good morning"
+    elif hour < 18:
+        greeting = "Good afternoon"
+    else:
+        greeting = "Good evening"
+
+    return render(request, 'readout/dashboard.html', {
+        'greeting': greeting,
+    })
 
 def extract_text_from_pdf(pdf_file):
     reader = PyPDF2.PdfReader(pdf_file)
@@ -38,16 +51,6 @@ def extract_text_from_pdf(pdf_file):
 def upload(request):
     if request.method == 'POST':
         form = TextOrPDFForm(request.POST, request.FILES)
-        # if form.is_valid():
-        #     text = form.cleaned_data.get('text_input')
-        #     pdf = form.cleaned_data.get('pdf_file')
-
-        #     if pdf:
-        #         text = extract_text_from_pdf(pdf)
-
-        #     # Store the extracted text in session (temp) for next step
-        #     request.session['tts_text'] = text
-        #     return redirect('preview')
         if form.is_valid():
             text = form.cleaned_data.get('text_input')
             pdf = form.cleaned_data.get('pdf_file')
