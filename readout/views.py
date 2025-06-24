@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+from .forms import CustomRegisterForm
+from .forms import CustomLoginForm
 import PyPDF2
 from .forms import TextOrPDFForm
 from gtts import gTTS
@@ -17,13 +20,17 @@ def home(request):
 
 def register(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomRegisterForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect("login")
     else:
-        form = UserCreationForm()
+        form = CustomRegisterForm()
     return render(request, "readout/register.html", {'form': form})
+
+class CustomLoginView(LoginView):
+    authentication_form = CustomLoginForm
+    template_name = 'registration/login.html'
 
 @login_required
 def dashboard(request):
