@@ -1,0 +1,17 @@
+<h2>Paste Text to Convert</h2>
+<form method="post">
+  {% csrf_token %}
+  <textarea name="pasted_text" rows="10" cols="50"></textarea><br>
+  <button type="submit">Convert</button>
+</form>
+
+{% if text_output %}
+  <h3>Text:</h3>
+  <p>{{ text_output }}</p>
+  <audio controls>
+    <source src="{{ audio_file_url }}" type="audio/mp3">
+  </audio>
+  <a href="{{ audio_file_url }}" download>Download Audio</a>
+{% endif %}
+
+<p><a href="{% url 'dashboard' %}">Back to Dashboard</a></p>
