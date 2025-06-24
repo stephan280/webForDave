@@ -61,8 +61,8 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
-/media/
-/media/*.mp3
+# media/mp3 stuff
+*mp3
 
 # Flask stuff:
 instance/
