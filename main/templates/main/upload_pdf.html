@@ -1,15 +1,24 @@
 <h2>Upload PDF to Convert</h2>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  <input type="file" name="pdf_file" accept="application/pdf"><br>
+  <input type="file" name="pdf_file" accept="application/pdf"><br><br>
+
+  <label>Language:</label>
+  <select name="language">
+    <option value="en" {% if language == "en" %}selected{% endif %}>English</option>
+    <option value="pidgin" {% if language == "pidgin" %}selected{% endif %}>Pidgin</option>
+  </select><br><br>
+
   <button type="submit">Convert</button>
 </form>
 
 {% if text_output %}
   <h3>Extracted Text:</h3>
   <p>{{ text_output }}</p>
+
+  <h3>Audio:</h3>
   <audio controls>
-    <source src="{{ audio_file_url }}" type="audio/mp3">
+    <source src="{{ audio_file_url }}" type="audio/wav">
   </audio>
   <a href="{{ audio_file_url }}" download>Download Audio</a>
 {% endif %}
