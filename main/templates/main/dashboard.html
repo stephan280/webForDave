@@ -1,0 +1,23 @@
+<h2>Welcome to your Dashboard, {{ user.username }}</h2>
+
+<form method="post">
+  {% csrf_token %}
+  <label for="pasted_text">Paste Text:</label><br>
+  <textarea name="pasted_text" rows="10" cols="50"></textarea><br>
+  <button type="submit">Convert Text</button>
+</form>
+
+<hr>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <label for="pdf_file">Upload PDF:</label><br>
+  <input type="file" name="pdf_file"><br>
+  <button type="submit">Convert PDF</button>
+</form>
+
+{% if text_output %}
+  <hr>
+  <h3>Extracted / Submitted Text:</h3>
+  <p>{{ text_output }}</p>
+{% endif %}
