@@ -4,7 +4,7 @@ from .models import Conversion
 class ConversionForm(forms.ModelForm):
     class Meta:
         model = Conversion
-        fields = ['pdf_file', 'pasted_text']
+        fields = ['pdf_file', 'pasted_text', 'language']
 
     def clean(self):
         cleaned_data = super().clean()

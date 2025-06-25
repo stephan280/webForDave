@@ -6,6 +6,7 @@ from django.contrib import messages
 from .forms import ConversionForm
 from .models import Conversion
 from gtts import gTTS
+from gtts.lang import tts_langs
 from django.core.files.base import ContentFile
 from io import BytesIO
 import fitz
@@ -43,7 +44,7 @@ def upload_or_paste(request):
         form = ConversionForm(request.POST, request.FILES)
         if form.is_valid():
             conversion = form.save(commit=False)
-            conversion.user = request.user 
+            conversion.user = request.user
 
             if not conversion.pdf_file and not conversion.pasted_text:
                 messages.error(request, "❌ Please upload a PDF or paste some text.")
@@ -56,8 +57,15 @@ def upload_or_paste(request):
             final_text = conversion.pasted_text
 
             if final_text and final_text.strip():
+                supported_languages = tts_langs().keys()
+                lang_code = conversion.language
+
+                if lang_code not in supported_languages:
+                    lang_code = 'en'
+                    messages.warning(request, "⚠️ Selected language not supported. Defaulting to English.")
+
                 try:
-                    tts = gTTS(text=final_text, lang='en')
+                    tts = gTTS(text=final_text, lang=lang_code)
                     mp3_fp = BytesIO()
                     tts.write_to_fp(mp3_fp)
                     mp3_fp.seek(0)
