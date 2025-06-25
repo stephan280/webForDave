@@ -11,6 +11,8 @@ from django.core.files.base import ContentFile
 from io import BytesIO
 import fitz
 
+MAX_CHAR_LIMIT = 3000
+
 def home(request):
     return render(request, 'converter/home.html')
 
@@ -46,36 +48,36 @@ def upload_or_paste(request):
             conversion = form.save(commit=False)
             conversion.user = request.user
 
-            if not conversion.pdf_file and not conversion.pasted_text:
-                messages.error(request, "❌ Please upload a PDF or paste some text.")
-                return render(request, 'converter/upload.html', {'form': form})
-
+            # Extract from PDF if uploaded
             if conversion.pdf_file:
                 extracted_text = extract_text_from_pdf(conversion.pdf_file)
                 conversion.pasted_text = extracted_text
 
             final_text = conversion.pasted_text
 
-            if final_text and final_text.strip():
-                supported_languages = tts_langs().keys()
-                lang_code = conversion.language
+            # ✅ Check if there is any text
+            if not final_text or not final_text.strip():
+                messages.error(request, "❌ Please upload a PDF or paste some text.")
+                return render(request, 'converter/upload.html', {'form': form})
 
-                if lang_code not in supported_languages:
-                    lang_code = 'en'
-                    messages.warning(request, "⚠️ Selected language not supported. Defaulting to English.")
+            # ✅ Check character length
+            if len(final_text.strip()) > MAX_CHAR_LIMIT:
+                messages.error(request, f"❌ Text is too long! Limit is {MAX_CHAR_LIMIT} characters.")
+                return render(request, 'converter/upload.html', {'form': form})
 
-                try:
-                    tts = gTTS(text=final_text, lang=lang_code)
-                    mp3_fp = BytesIO()
-                    tts.write_to_fp(mp3_fp)
-                    mp3_fp.seek(0)
-                    conversion.audio_file.save('audio.mp3', ContentFile(mp3_fp.read()), save=False)
-                except Exception as e:
-                    messages.error(request, f"❌ TTS Error: {str(e)}")
-                    return render(request, 'converter/upload.html', {'form': form})
+            # ✅ Generate audio
+            try:
+                tts = gTTS(text=final_text.strip(), lang=conversion.language)
+                mp3_fp = BytesIO()
+                tts.write_to_fp(mp3_fp)
+                mp3_fp.seek(0)
+                conversion.audio_file.save('audio.mp3', ContentFile(mp3_fp.read()), save=False)
+            except Exception as e:
+                messages.error(request, f"❌ TTS Error: {str(e)}")
+                return render(request, 'converter/upload.html', {'form': form})
 
             conversion.save()
-            messages.success(request, "✅ Your file was converted successfully!")
+            messages.success(request, "✅ Audio generated successfully!")
             return redirect('conversion_detail', conversion_id=conversion.id)
     else:
         form = ConversionForm()
