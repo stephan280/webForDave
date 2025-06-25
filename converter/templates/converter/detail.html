@@ -1,15 +1,25 @@
 {% extends 'base.html' %}
+{% block title %}Audio Details{% endblock %}
 {% block content %}
-<h1>Converted Text</h1>
-<pre>{{ conversion.pasted_text }}</pre>
 
-{% if conversion.audio_file %}
-    <h2>Listen to Audio</h2>
-    <audio controls>
-        <source src="{{ conversion.audio_file.url }}" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-{% else %}
-    <p>No audio available.</p>
-{% endif %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm p-4">
+      <h3 class="mb-3">Converted Text</h3>
+      <pre class="p-3 bg-light rounded" style="white-space: pre-wrap;">{{ conversion.pasted_text }}</pre>
+
+      {% if conversion.audio_file %}
+        <hr />
+        <h5 class="mt-4">Audio</h5>
+        <audio controls class="w-100 mt-2">
+          <source src="{{ conversion.audio_file.url }}" type="audio/mpeg">
+          Your browser does not support audio playback.
+        </audio>
+      {% else %}
+        <div class="alert alert-warning mt-4">No audio available.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 {% endblock %}

@@ -10,6 +10,9 @@ from django.core.files.base import ContentFile
 from io import BytesIO
 import fitz
 
+def home(request):
+    return render(request, 'core/home.html')
+
 def extract_text_from_pdf(pdf_file):
     text = ""
     with fitz.open(stream=pdf_file.read(), filetype="pdf") as doc:
@@ -75,3 +78,11 @@ def upload_or_paste(request):
 def conversion_detail(request, conversion_id):
     conversion = get_object_or_404(Conversion, id=conversion_id, user=request.user)
     return render(request, 'converter/detail.html', {'conversion': conversion})
+
+@login_required
+def delete_conversion(request, conversion_id):
+    conversion = get_object_or_404(Conversion, id=conversion_id, user=request.user)
+    if request.method == 'POST':
+        conversion.delete()
+        return redirect('dashboard')
+    return redirect('dashboard')

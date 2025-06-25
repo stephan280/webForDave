@@ -1,9 +1,29 @@
 {% extends 'base.html' %}
+{% load form_filters %}
+{% block title %}Convert to Audio{% endblock %}
 {% block content %}
-<h1>Upload PDF or Paste Text</h1>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Submit</button>
-</form>
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="bg-white p-5 shadow-sm rounded">
+      <h2 class="mb-4 text-center">Convert PDF or Text</h2>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="{{ form.pdf_file.id_for_label }}" class="form-label">Upload PDF</label>
+          {{ form.pdf_file|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.pasted_text.id_for_label }}" class="form-label">Or Paste Text</label>
+          {{ form.pasted_text|add_class:"form-control" }}
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Convert</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
