@@ -13,11 +13,16 @@ import fitz
 from django.http import StreamingHttpResponse
 from wsgiref.util import FileWrapper
 from django.http import HttpResponse
+from django.contrib.auth import logout
 
 MAX_CHAR_LIMIT = 5000
 
 def home(request):
     return render(request, 'converter/home.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
 
 def extract_text_from_pdf(pdf_file):
     text = ""

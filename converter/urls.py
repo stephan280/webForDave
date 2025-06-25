@@ -7,5 +7,6 @@ urlpatterns = [
     path('conversion/<int:conversion_id>/', views.conversion_detail, name='conversion_detail'),
     path('conversion/<int:conversion_id>/delete/', views.delete_conversion, name='delete_conversion'),
     path('register/', views.register, name='register'),
+    path('logout/', views.logout_view, name='logout'),
     path('conversion/<int:conversion_id>/audio/', views.stream_audio, name='stream_audio'),
 ]
