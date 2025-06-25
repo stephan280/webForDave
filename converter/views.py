@@ -10,8 +10,11 @@ from gtts.lang import tts_langs
 from django.core.files.base import ContentFile
 from io import BytesIO
 import fitz
+from django.http import StreamingHttpResponse
+from wsgiref.util import FileWrapper
+from django.http import HttpResponse
 
-MAX_CHAR_LIMIT = 3000
+MAX_CHAR_LIMIT = 5000
 
 def home(request):
     return render(request, 'converter/home.html')
@@ -96,3 +99,15 @@ def delete_conversion(request, conversion_id):
         conversion.delete()
         return redirect('dashboard')
     return redirect('dashboard')
+
+@login_required
+def stream_audio(request, conversion_id):
+    conversion = get_object_or_404(Conversion, id=conversion_id, user=request.user)
+    if not conversion.audio_file:
+        return HttpResponse(status=404)
+
+    audio_file = conversion.audio_file
+    wrapper = FileWrapper(audio_file.open('rb'))
+    response = StreamingHttpResponse(wrapper, content_type='audio/mpeg')
+    response['Content-Disposition'] = f'inline; filename="{audio_file.name}"'
+    return response
