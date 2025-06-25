@@ -1,3 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
 <h1>Converted Text</h1>
 <pre>{{ conversion.pasted_text }}</pre>
 
@@ -10,3 +12,4 @@
 {% else %}
     <p>No audio available.</p>
 {% endif %}
+{% endblock %}

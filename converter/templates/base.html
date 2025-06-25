@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}ReadOut{% endblock %}</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 40px auto;
+      max-width: 700px;
+    }
+    nav a {
+      margin-right: 15px;
+    }
+    .message {
+      padding: 10px;
+      background: #def;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'upload' %}">Convert New</a>
+    {% if user.is_authenticated %}
+      <span>Welcome, {{ user.username }}</span>
+      <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+  </nav>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="message">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>

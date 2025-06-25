@@ -1,14 +1,15 @@
-<h1>Welcome {{ user.username }}</h1>
-<a href="{% url 'upload' %}">Convert New Text or PDF</a>
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Conversions</h2>
 <ul>
-    {% for item in conversions %}
-        <li>
-            <a href="{% url 'conversion_detail' item.id %}">
-                {{ item.created_at|date:"SHORT_DATETIME_FORMAT" }}
-            </a>
-        </li>
-    {% empty %}
-        <li>No conversions yet</li>
-    {% endfor %}
+  {% for item in conversions %}
+    <li>
+      <a href="{% url 'conversion_detail' item.id %}">
+        {{ item.created_at|date:"D M d, H:i" }}
+      </a>
+    </li>
+  {% empty %}
+    <li>No conversions yet. <a href="{% url 'upload' %}">Create one →</a></li>
+  {% endfor %}
 </ul>
-<a href="{% url 'logout' %}">Logout</a>
+{% endblock %}
