@@ -1,9 +1,12 @@
-<h1>Extracted Text</h1>
-{% if conversion.pasted_text %}
-    <pre>{{ conversion.pasted_text }}</pre>
+<h1>Converted Text</h1>
+<pre>{{ conversion.pasted_text }}</pre>
+
+{% if conversion.audio_file %}
+    <h2>Listen to Audio</h2>
+    <audio controls>
+        <source src="{{ conversion.audio_file.url }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 {% else %}
-    <p>No text available.</p>
+    <p>No audio available.</p>
 {% endif %}
-<audio controls>
-  <source src="#" type="audio/mpeg">
-</audio>
