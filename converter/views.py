@@ -12,7 +12,7 @@ from io import BytesIO
 import fitz
 
 def home(request):
-    return render(request, 'core/home.html')
+    return render(request, 'converter/home.html')
 
 def extract_text_from_pdf(pdf_file):
     text = ""
