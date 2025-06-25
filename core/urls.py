@@ -18,8 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from converter import views as converter_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("converter.urls")),
+    path('', include('django.contrib.auth.urls')),  # login, logout
+    path('', converter_views.dashboard, name='dashboard'),  # default route
+    path('upload/', converter_views.upload_or_paste, name='upload'),
+    path('conversion/<int:conversion_id>/', converter_views.conversion_detail, name='conversion_detail'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
