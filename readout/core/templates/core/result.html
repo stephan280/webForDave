@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+{% block title %}Conversion Result{% endblock %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h2 class="card-title text-center" style="color: #007BFF;">Conversion Result</h2>
+                    <p><strong>Text:</strong> {{ conversion.input_text|truncatewords:50 }}</p>
+                    <p><strong>Language:</strong> {{ conversion.get_language_display }}</p>
+                    <p><strong>Status:</strong> Processing...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
