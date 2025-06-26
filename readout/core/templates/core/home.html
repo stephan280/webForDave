@@ -1,0 +1,11 @@
+{% extends 'core/base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h1>Welcome to ReadOut</h1>
+    <p>Convert your text or PDFs to English or Pidgin audio!</p>
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.username }}! Ready to convert some text?</p>
+    {% else %}
+        <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'signup' %}">sign up</a> to get started.</p>
+    {% endif %}
+{% endblock %}
