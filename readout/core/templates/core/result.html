@@ -1,74 +1,83 @@
 {% extends 'core/base.html' %}
 {% load text_filters %}
 {% block title %}Conversion Result{% endblock %}
+
 {% block content %}
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card shadow-lg">
-                <div class="card-body">
-                    <h2 class="card-title text-center" style="color: #007BFF;">Conversion Result</h2>
-                    {% if conversion.input_text|starts_with:"Error:" %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ conversion.input_text }}
-                        </div>
-                    {% else %}
-                        <p><strong>Text:</strong> {{ conversion.input_text|truncatewords:50 }}</p>
-                        <p><strong>Language:</strong> {{ conversion.get_language_display }}</p>
-                        <div id="audio-container">
-                            {% if conversion.audio_file %}
-                                <p><strong>Audio:</strong></p>
-                                <audio controls class="w-100 mb-3" aria-label="Audio playback for converted text">
-                                    <source src="{{ conversion.audio_file.url }}" type="audio/mpeg">
-                                    Your browser does not support the audio element.
-                                </audio>
-                                <a href="{{ conversion.audio_file.url }}" class="btn btn-primary" download>Download Audio</a>
-                            {% else %}
-                                <p><strong>Status:</strong> Processing... <span id="loading">Please wait</span></p>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+<div class="row justify-content-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+    <div class="card shadow-lg border-0 p-4">
+      <div class="card-body">
+        <h2 class="fw-bold text-center mb-4" style="color: #6366f1;">Conversion Result</h2>
+
+        {% if conversion.input_text|starts_with:"Error:" %}
+          <div class="alert alert-danger rounded-3">{{ conversion.input_text }}</div>
+        {% else %}
+          <p class="mb-3"><strong>Text:</strong> {{ conversion.input_text|truncatewords:50 }}</p>
+          <p class="mb-3"><strong>Language:</strong> {{ conversion.get_language_display }}</p>
+
+          <div id="audio-container">
+            {% if conversion.audio_file %}
+              <p><strong>Audio:</strong></p>
+              <audio controls class="w-100 mb-3" aria-label="Audio playback for converted text">
+                <source src="{{ conversion.audio_file.url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+              <a href="{{ conversion.audio_file.url }}" class="btn btn-primary mb-3" download>Download Audio</a>
+            {% else %}
+              <div class="alert alert-info">Processing audio... please wait.</div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <!-- Convert Another Button -->
+        <div class="d-grid mt-4">
+          <a href="{% url 'convert_text' %}" class="btn btn-outline-secondary">Convert Another</a>
         </div>
+      </div>
     </div>
-    {% if not conversion.audio_file and not conversion.input_text|starts_with:"Error:" %}
-        <script>
-            function checkAudioStatus() {
-                fetch("{% url 'check_audio_status' conversion_id=conversion.id %}")
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.audio_ready) {
-                            document.getElementById('audio-container').innerHTML = `
-                                <p><strong>Audio:</strong></p>
-                                <audio controls class="w-100 mb-3" aria-label="Audio playback for converted text">
-                                    <source src="${data.audio_url}" type="audio/mpeg">
-                                    Your browser does not support the audio element.
-                                </audio>
-                                <a href="${data.audio_url}" class="btn btn-primary" download>Download Audio</a>
-                            `;
-                        } else if (data.error) {
-                            document.getElementById('audio-container').innerHTML = `
-                                <div class="alert alert-danger" role="alert">
-                                    ${data.error}
-                                </div>
-                            `;
-                        } else {
-                            setTimeout(checkAudioStatus, 2000); // Check every 2 seconds
-                        }
-                    })
-                    .catch(error => {
-                        document.getElementById('audio-container').innerHTML = `
-                            <div class="alert alert-danger" role="alert">
-                                Error checking audio status: ${error}
-                            </div>
-                        `;
-                    });
-            }
-            window.onload = function() {
-                if (!document.querySelector('audio')) {
-                    checkAudioStatus();
-                }
-            };
-        </script>
-    {% endif %}
+  </div>
+</div>
+
+{% if not conversion.audio_file and not conversion.input_text|starts_with:"Error:" %}
+<script>
+  function checkAudioStatus() {
+    fetch("{% url 'check_audio_status' conversion_id=conversion.id %}")
+      .then(response => response.json())
+      .then(data => {
+        if (data.audio_ready) {
+          document.getElementById('audio-container').innerHTML = `
+            <p><strong>Audio:</strong></p>
+            <audio controls class="w-100 mb-3" aria-label="Audio playback for converted text">
+              <source src="${data.audio_url}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+            <a href="${data.audio_url}" class="btn btn-primary mb-3" download>Download Audio</a>
+          `;
+          document.querySelector('.d-grid').classList.remove('d-none');
+        } else if (data.error) {
+          document.getElementById('audio-container').innerHTML = `
+            <div class="alert alert-danger rounded-3" role="alert">
+              ${data.error}
+            </div>
+          `;
+        } else {
+          setTimeout(checkAudioStatus, 2000);
+        }
+      })
+      .catch(error => {
+        document.getElementById('audio-container').innerHTML = `
+          <div class="alert alert-danger rounded-3" role="alert">
+            Error checking audio status: ${error}
+          </div>
+        `;
+      });
+  }
+
+  window.onload = function() {
+    if (!document.querySelector('audio')) {
+      checkAudioStatus();
+    }
+  };
+</script>
+{% endif %}
 {% endblock %}

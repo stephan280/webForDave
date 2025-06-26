@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .forms import ConversionForm, CustomSignupForm, CustomLoginForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ConversionForm
@@ -24,7 +25,7 @@ def home(request):
 
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomSignupForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
@@ -33,12 +34,13 @@ def signup(request):
         else:
             messages.error(request, 'Error creating account. Please check the form.')
     else:
-        form = UserCreationForm()
+        form = CustomSignupForm()
     return render(request, 'core/signup.html', {'form': form})
+
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = CustomLoginForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -52,8 +54,9 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
     else:
-        form = AuthenticationForm()
+        form = CustomLoginForm()
     return render(request, 'core/login.html', {'form': form})
+
 
 def logout_view(request):
     logout(request)

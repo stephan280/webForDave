@@ -1,5 +1,7 @@
 from django import forms
 from .models import Conversion
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
 
 class ConversionForm(forms.ModelForm):
     class Meta:
@@ -18,3 +20,34 @@ class ConversionForm(forms.ModelForm):
         if not input_text and not pdf_file:
             raise forms.ValidationError('Please provide either text or a PDF file.')
         return cleaned_data
+    
+class CustomSignupForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password1', 'password2']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Override widgets and suppress help_text
+        for field_name, field in self.fields.items():
+            field.help_text = ''  # ✂ Remove that default clutter
+            field.widget.attrs.update({
+                'class': 'form-control',
+                'placeholder': field.label,
+            })
+
+
+class CustomLoginForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': "Incorrect username or password. Try again.",
+        'inactive': "This account is inactive.",
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'form-control',
+                'placeholder': field.label,
+            })
