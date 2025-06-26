@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load text_filters %}
 {% block title %}Conversion Result{% endblock %}
 {% block content %}
     <div class="row justify-content-center">
@@ -6,11 +7,68 @@
             <div class="card shadow-lg">
                 <div class="card-body">
                     <h2 class="card-title text-center" style="color: #007BFF;">Conversion Result</h2>
-                    <p><strong>Text:</strong> {{ conversion.input_text|truncatewords:50 }}</p>
-                    <p><strong>Language:</strong> {{ conversion.get_language_display }}</p>
-                    <p><strong>Status:</strong> Processing...</p>
+                    {% if conversion.input_text|starts_with:"Error:" %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ conversion.input_text }}
+                        </div>
+                    {% else %}
+                        <p><strong>Text:</strong> {{ conversion.input_text|truncatewords:50 }}</p>
+                        <p><strong>Language:</strong> {{ conversion.get_language_display }}</p>
+                        <div id="audio-container">
+                            {% if conversion.audio_file %}
+                                <p><strong>Audio:</strong></p>
+                                <audio controls class="w-100 mb-3" aria-label="Audio playback for converted text">
+                                    <source src="{{ conversion.audio_file.url }}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                                <a href="{{ conversion.audio_file.url }}" class="btn btn-primary" download>Download Audio</a>
+                            {% else %}
+                                <p><strong>Status:</strong> Processing... <span id="loading">Please wait</span></p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+    {% if not conversion.audio_file and not conversion.input_text|starts_with:"Error:" %}
+        <script>
+            function checkAudioStatus() {
+                fetch("{% url 'check_audio_status' conversion_id=conversion.id %}")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.audio_ready) {
+                            document.getElementById('audio-container').innerHTML = `
+                                <p><strong>Audio:</strong></p>
+                                <audio controls class="w-100 mb-3" aria-label="Audio playback for converted text">
+                                    <source src="${data.audio_url}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                                <a href="${data.audio_url}" class="btn btn-primary" download>Download Audio</a>
+                            `;
+                        } else if (data.error) {
+                            document.getElementById('audio-container').innerHTML = `
+                                <div class="alert alert-danger" role="alert">
+                                    ${data.error}
+                                </div>
+                            `;
+                        } else {
+                            setTimeout(checkAudioStatus, 2000); // Check every 2 seconds
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('audio-container').innerHTML = `
+                            <div class="alert alert-danger" role="alert">
+                                Error checking audio status: ${error}
+                            </div>
+                        `;
+                    });
+            }
+            window.onload = function() {
+                if (!document.querySelector('audio')) {
+                    checkAudioStatus();
+                }
+            };
+        </script>
+    {% endif %}
 {% endblock %}

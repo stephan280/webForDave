@@ -8,4 +8,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('convert/', views.convert_text, name='convert_text'),
     path('result/<int:conversion_id>/', views.conversion_result, name='conversion_result'),
+    path('check-audio/<int:conversion_id>/', views.check_audio_status, name='check_audio_status'),
 ]
