@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+7)m@3&3grps7p53lrs*#2cs(tsh*ps&8gqf7$rkfdq#b*)3g0'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -137,8 +138,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # django_heroku.settings(locals())
 
 import os
-SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret-key')
-DEBUG = os.environ.get('DEBUG', '') != 'False'
+# SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret-key')
+# DEBUG = os.environ.get('DEBUG', '') != 'False'
 
-DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
-SECRET_KEY = config('l973y5@bonl2dmo7yi$hc(i)oxprs0@*+lik%jvxy6m-bz2z39')
+# DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+# SECRET_KEY = config('l973y5@bonl2dmo7yi$hc(i)oxprs0@*+lik%jvxy6m-bz2z39')
+
