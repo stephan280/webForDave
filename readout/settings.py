@@ -78,13 +78,20 @@ WSGI_APPLICATION = 'readout.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL'),
-        conn_max_age=600,     # keeps connections open for faster performance
-        ssl_require=True      # important for cloud DBs
-    )
-}
+DATABASE_URL = config('DATABASE_URL')
+
+if DATABASE_URL.startswith('sqlite'):
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 
 
 # Password validation
