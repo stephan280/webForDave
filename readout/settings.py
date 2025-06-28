@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,10 +78,11 @@ WSGI_APPLICATION = 'readout.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL'),
+        conn_max_age=600,     # keeps connections open for faster performance
+        ssl_require=True      # important for cloud DBs
+    )
 }
 
 
@@ -135,3 +139,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 import os
 SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret-key')
 DEBUG = os.environ.get('DEBUG', '') != 'False'
+
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+SECRET_KEY = config('l973y5@bonl2dmo7yi$hc(i)oxprs0@*+lik%jvxy6m-bz2z39')
